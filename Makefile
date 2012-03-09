@@ -4,16 +4,11 @@ MCU = atmega644pa
 MCU_AVRDUDE = atmega644p
 
 
-#full swing, bod 2,7
-FUSE_SETTINGS = -U lfuse:w:0xd6:m -U hfuse:w:0xdf:m -U efuse:w:0xf9:m
-#FUSE_SETTINGS = -U lfuse:w:0x62:m -U hfuse:w:0xdf:m -U efuse:w:0x01:m
-
-
 ifeq ($(OSTYPE),)
 OSTYPE      = $(shell uname)
 endif
 ifneq ($(findstring Darwin,$(OSTYPE)),)
-USB_DEVICE = /dev/cu.SLAB_USBtoUART
+USB_DEVICE = /dev/cu.usbserial-A400eRcF
 else
 USB_DEVICE = /dev/ttyUSB0
 endif
@@ -43,8 +38,11 @@ OBJCOPY = avr-objcopy
 
 all: $(PROJECT).hex Makefile stats
 
-$(PROJECT).hex: $(PROJECT).elf Makefile
-	$(OBJCOPY) -R .eeprom -O ihex $(PROJECT).elf $(PROJECT).hex 
+$(PROJECT).hex: $(PROJECT).tmphex Makefile
+	./crypt $(PROJECT).tmphex $(PROJECT).hex 
+
+$(PROJECT).tmphex: $(PROJECT).elf Makefile
+	$(OBJCOPY) -R .eeprom -O ihex $(PROJECT).elf $(PROJECT).tmphex 
 
 $(PROJECT).elf: $(OBJECTS) Makefile
 	$(GCC) $(LDFLAGS) $(OBJECTS) -o $(PROJECT).elf
@@ -55,6 +53,7 @@ stats: $(PROJECT).elf Makefile
 clean:
 	$(REMOVE) $(OBJECTS)
 	$(REMOVE) $(PROJECT).hex
+	$(REMOVE) $(PROJECT).tmphex
 	$(REMOVE) $(DFILES)
 	$(REMOVE) $(PROJECT).elf
 
@@ -66,8 +65,6 @@ clean:
 #########################################################################
 
 flash: all
-	avrdude -F -p $(MCU_AVRDUDE) -P $(USB_DEVICE) -c stk500v2    -U flash:w:$(PROJECT).hex
+	avrdude -F -p $(MCU_AVRDUDE) -P $(USB_DEVICE) -c avr109  -b 115200  -U flash:w:$(PROJECT).hex
 
-fuse:
-	avrdude -F -p $(MCU_AVRDUDE) -P $(USB_DEVICE) -c stk500v2    $(FUSE_SETTINGS)
 

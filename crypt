@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+use strict;
+use Crypt::Rijndael;
+
+
+
+my $cipher = Crypt::Rijndael->new("\x2e"."\x7e"."\x15"."\x16"."\x28"."\xa0"."\xd2"."\xa6"."\xab"."\xf7"."\x15"."\x88"."\x09"."\xcf"."\x4f"."\x3d");
+
+
+
+open infile,$ARGV[0];
+
+my $plain;
+
+while(<infile>)
+{
+	$plain .= $_
+}
+close infile;
+
+open outfile,'>'.$ARGV[1];
+
+my $chain = "\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0"."\x0";
+
+
+my $pad = length($plain) % 512;
+
+for(0..$pad)
+{
+	$plain.="\xFF";
+}
+
+
+while($plain)
+{
+
+	my $ncry = substr($plain,0,16);
+
+	$ncry = $ncry ^ $chain;
+
+	my $cry = $cipher->encrypt($ncry);
+	
+	print outfile $cry;	
+
+	$chain = $cry;
+	
+	$plain = substr($plain,16);
+	
+	
+}
+
+
+close outfile;
+
