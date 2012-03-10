@@ -35,12 +35,13 @@ int main (void)
 	DDRC |= (1<<DDC3);
 	PORTC |= (1<<PORTC3);
 
-
-
-
 	PORTD |= (1<<PORTD6);
 	PORTC |= (1<<PORTC2);
 	PORTD |= (1<<PORTD7);
+
+
+
+
 
 
 	LCD_Init ();

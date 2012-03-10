@@ -45,16 +45,4 @@
 #define clr_si()    (PORTB &= ~(1 << PB5))
 
 
-#define NC 1
-#define FC 2
-#define MK3MAG 3
-#define MKGPS 4
-#define RAW 5
-
-//*****************************************************************************
-// 
-extern volatile uint8_t mode;
-extern uint8_t hardware;
-extern uint8_t current_hardware;
-
 #endif

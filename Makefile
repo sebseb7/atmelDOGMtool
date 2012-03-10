@@ -1,6 +1,6 @@
 PROJECT=dogmtool
 
-MCU = atmega644pa
+MCU = atmega644p
 MCU_AVRDUDE = atmega644p
 
 
@@ -39,10 +39,13 @@ OBJCOPY = avr-objcopy
 all: $(PROJECT).hex Makefile stats
 
 $(PROJECT).hex: $(PROJECT).tmphex Makefile
-	./crypt $(PROJECT).tmphex $(PROJECT).hex 
+	$(OBJCOPY) -I binary -O ihex $< $@
 
-$(PROJECT).tmphex: $(PROJECT).elf Makefile
-	$(OBJCOPY) -R .eeprom -O ihex $(PROJECT).elf $(PROJECT).tmphex 
+$(PROJECT).tmphex: $(PROJECT).bin Makefile
+	./crypt $(PROJECT).bin $(PROJECT).tmphex 
+
+$(PROJECT).bin: $(PROJECT).elf Makefile
+	$(OBJCOPY) -R .eeprom -O binary $(PROJECT).elf $(PROJECT).bin 
 
 $(PROJECT).elf: $(OBJECTS) Makefile
 	$(GCC) $(LDFLAGS) $(OBJECTS) -o $(PROJECT).elf
@@ -53,7 +56,7 @@ stats: $(PROJECT).elf Makefile
 clean:
 	$(REMOVE) $(OBJECTS)
 	$(REMOVE) $(PROJECT).hex
-	$(REMOVE) $(PROJECT).tmphex
+	$(REMOVE) $(PROJECT).bin
 	$(REMOVE) $(DFILES)
 	$(REMOVE) $(PROJECT).elf
 
@@ -65,6 +68,6 @@ clean:
 #########################################################################
 
 flash: all
-	avrdude -F -p $(MCU_AVRDUDE) -P $(USB_DEVICE) -c avr109  -b 115200  -U flash:w:$(PROJECT).hex
+	avrdude -p $(MCU_AVRDUDE) -P $(USB_DEVICE) -c avr109  -b 115200  -U flash:w:$(PROJECT).hex
 
 
