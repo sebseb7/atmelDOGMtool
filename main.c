@@ -9,6 +9,8 @@
 #include "lcd.h"
 #include "usart.h"
 #include "timer.h"
+#include "TWI_Master.h"
+#include "General.h"
 
 
 
@@ -41,6 +43,7 @@ int main (void)
 	LCD_Init ();
 	USART_Init ();
 	USART1_Init ();
+	TWIM_Init (200000);
 	
 	TIMER0_Init ();
 	
