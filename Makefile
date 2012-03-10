@@ -56,6 +56,7 @@ stats: $(PROJECT).elf Makefile
 clean:
 	$(REMOVE) $(OBJECTS)
 	$(REMOVE) $(PROJECT).hex
+	$(REMOVE) $(PROJECT).tmphex
 	$(REMOVE) $(PROJECT).bin
 	$(REMOVE) $(DFILES)
 	$(REMOVE) $(PROJECT).elf
